@@ -9,22 +9,37 @@ public class ChaseState : IEnemyState
 
     public void Update(EnemyAI enemy)
     {
+        // If there is no target, return to patrol.
         if (enemy.Target == null)
         {
             enemy.ChangeState(new PatrolState());
             return;
         }
 
-        Enemy enemyStats = enemy.GetComponent<Enemy>();
+        Enemy enemySettings = enemy.GetComponent<Enemy>();
+        if (enemySettings == null)
+        {
+            Debug.LogWarning($"{enemy.gameObject.name} missing Enemy component.");
+            enemy.ChangeState(new PatrolState());
+            return;
+        }
+        
+        // Check if the target's x-coordinate is still within the enemy's patrol boundaries.
+        float targetX = enemy.Target.position.x;
+        if (targetX < enemySettings.patrolMinX || targetX > enemySettings.patrolMaxX)
+        {
+            Debug.Log($"{enemy.gameObject.name}: Target left patrol area. Reverting to PatrolState.");
+            enemy.ChangeState(new PatrolState());
+            return;
+        }
 
-        // Capture the enemy's current position
+        // Move horizontally toward the target.
+        // We'll force the enemy to patrol on the designated patrolY level.
         Vector2 currentPos = enemy.transform.position;
-        Vector2 targetPos = new Vector2(enemy.Target.position.x, currentPos.y);
+        Vector2 targetPos = new Vector2(enemy.Target.position.x, enemySettings.patrolY);
+        enemy.transform.position = Vector2.MoveTowards(currentPos, targetPos, enemySettings.chaseSpeed * Time.deltaTime);
 
-        // Move the enemy toward the target position.
-        enemy.transform.position = Vector2.MoveTowards(currentPos, targetPos, enemyStats.chaseSpeed * Time.deltaTime);
-
-        // Calculate movement delta for sprite flipping.
+        // Optionally update sprite direction.
         float horizontalDelta = enemy.transform.position.x - currentPos.x;
         SpriteFlipper flipper = enemy.GetComponent<SpriteFlipper>();
         if (flipper != null)
@@ -32,16 +47,11 @@ public class ChaseState : IEnemyState
             flipper.UpdateDirection(horizontalDelta);
         }
 
-        // Use horizontal distance for transitioning to attack.
+        // Transition to AttackState if within attack range.
         float horizontalDistance = Mathf.Abs(enemy.transform.position.x - enemy.Target.position.x);
-        if (horizontalDistance <= enemyStats.attackRange)
+        if (horizontalDistance <= enemySettings.attackRange)
         {
             enemy.ChangeState(new AttackState());
-        }
-        // If the target moves outside the patrol area, revert to Patrol.
-        else if (enemy.Target.position.x < enemyStats.patrolMinX || enemy.Target.position.x > enemyStats.patrolMaxX)
-        {
-            enemy.ChangeState(new PatrolState());
         }
     }
 

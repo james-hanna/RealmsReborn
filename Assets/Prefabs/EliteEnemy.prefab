@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7011076290312301941}
   - component: {fileID: 541360204573363228}
   - component: {fileID: 1679047135858391377}
+  - component: {fileID: 109267849333059939}
   m_Layer: 3
   m_Name: EliteEnemy
   m_TagString: Enemy
@@ -70,16 +71,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   enemyName: Elite
-  xpReward: 50
+  xpReward: 150
   patrolMinX: -5
   patrolMaxX: 5
   patrolSpeed: 2
   idleWaitMin: 0.5
   idleWaitMax: 2
-  detectionRange: 8
-  chaseSpeed: 2
+  patrolY: -0.068
+  detectionRange: 5
+  chaseSpeed: 3
   attackRange: 1
-  attackCooldown: 4
+  attackCooldown: 3
   attackDamage: 13
   spawner: {fileID: 0}
 --- !u!114 &7548184314442891182
@@ -216,7 +218,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -246,3 +248,15 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &109267849333059939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5135230276435869341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e63c7e6f0cc16647a87f277f4bb50b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

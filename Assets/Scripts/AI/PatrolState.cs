@@ -13,14 +13,14 @@ public class PatrolState : IEnemyState
         Debug.Log($"{enemy.gameObject.name} entered Patrol state.");
     }
 
-public void Update(EnemyAI enemy)
+    public void Update(EnemyAI enemy)
     {
-        // Check for a target (e.g., the player) within detection range.
+        // Check for a target within detection range.
         if (enemy.Target != null)
         {
             float distanceToTarget = Vector2.Distance(enemy.transform.position, enemy.Target.position);
-            Enemy enemyStats = enemy.GetComponent<Enemy>();
-            if (distanceToTarget <= enemyStats.detectionRange)
+            Enemy enemySettings = enemy.GetComponent<Enemy>();
+            if (distanceToTarget <= enemySettings.detectionRange)
             {
                 enemy.ChangeState(new ChaseState());
                 return;
@@ -29,28 +29,26 @@ public void Update(EnemyAI enemy)
 
         if (!isWaiting)
         {
-            Enemy enemyStats = enemy.GetComponent<Enemy>();
+            Enemy enemySettings = enemy.GetComponent<Enemy>();
 
-            // Capture the current position before moving.
+            // Move horizontally toward patrolTarget (keep y fixed)
             Vector3 currentPos = enemy.transform.position;
-            enemy.transform.position = Vector2.MoveTowards(enemy.transform.position, patrolTarget, enemyStats.patrolSpeed * Time.deltaTime);
-            Vector3 newPos = enemy.transform.position;
+            // Ensure we only update the x position; y remains the designated patrol level.
+            Vector2 newPos = Vector2.MoveTowards(new Vector2(currentPos.x, enemySettings.patrolY), patrolTarget, enemySettings.patrolSpeed * Time.deltaTime);
+            enemy.transform.position = new Vector3(newPos.x, enemySettings.patrolY, currentPos.z);
 
-            // Calculate horizontal movement delta.
+            // Update sprite flipping.
             float horizontalDelta = newPos.x - currentPos.x;
-
-            // Get the SpriteFlipper component and update direction.
             SpriteFlipper flipper = enemy.GetComponent<SpriteFlipper>();
             if (flipper != null)
             {
                 flipper.UpdateDirection(horizontalDelta);
             }
 
-            // If we have reached the patrol target, wait before picking a new target.
-            if (Vector2.Distance(enemy.transform.position, patrolTarget) < 0.1f)
+            if (Vector2.Distance(newPos, patrolTarget) < 0.1f)
             {
                 isWaiting = true;
-                float waitTime = Random.Range(enemyStats.idleWaitMin, enemyStats.idleWaitMax);
+                float waitTime = Random.Range(enemySettings.idleWaitMin, enemySettings.idleWaitMax);
                 enemy.StartCoroutine(WaitAndPickNewTarget(enemy, waitTime));
             }
         }
@@ -63,9 +61,11 @@ public void Update(EnemyAI enemy)
 
     private void ChooseNewPatrolTarget(EnemyAI enemy)
     {
-        Enemy enemyStats = enemy.GetComponent<Enemy>();
-        float randomX = Random.Range(enemyStats.patrolMinX, enemyStats.patrolMaxX);
-        patrolTarget = new Vector2(randomX, enemy.transform.position.y);
+        Enemy enemySettings = enemy.GetComponent<Enemy>();
+        float randomX = Random.Range(enemySettings.patrolMinX, enemySettings.patrolMaxX);
+        // Use the patrolY value from enemySettings
+        patrolTarget = new Vector2(randomX, enemySettings.patrolY);
+        Debug.Log($"{enemy.gameObject.name} new patrol target set to: {patrolTarget}");
     }
 
     private IEnumerator WaitAndPickNewTarget(EnemyAI enemy, float waitTime)

@@ -9,29 +9,23 @@ public class Enemy : CommonStats
     public int xpReward = 50;
 
     [Header("Patrol Settings (X Axis)")]
-    [Tooltip("Left boundary of the patrol area.")]
     public float patrolMinX = -5f;
-    [Tooltip("Right boundary of the patrol area.")]
     public float patrolMaxX = 5f;
-    [Tooltip("Speed while patrolling.")]
     public float patrolSpeed = 2f;
-    [Tooltip("Minimum idle time when reaching a patrol point.")]
     public float idleWaitMin = 0.5f;
-    [Tooltip("Maximum idle time when reaching a patrol point.")]
     public float idleWaitMax = 2f;
 
+    [Header("Patrol Settings (Y Axis)")]
+    [Tooltip("The y position that the enemy should patrol at (e.g., the floor level).")]
+    public float patrolY = 0f;
+
     [Header("Detection & Chase Settings")]
-    [Tooltip("Distance at which the enemy detects the player.")]
     public float detectionRange = 8f;
-    [Tooltip("Speed while chasing the player.")]
     public float chaseSpeed = 3f;
 
     [Header("Attack Settings")]
-    [Tooltip("Distance within which the enemy will attack.")]
     public float attackRange = 2f;
-    [Tooltip("Cooldown (in seconds) between attacks.")]
     public float attackCooldown = 1f;
-    [Tooltip("Damage per attack.")]
     public int attackDamage = 10;
 
     // Reference to the spawner that created this enemy.
